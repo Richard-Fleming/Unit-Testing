@@ -1,19 +1,32 @@
 #include <iostream>
-#include <assert.h>
 
 #include "../include/Tests.h"
-
-using namespace std;
+#include <cppunit/ui/text/TestRunner.h>
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestResultCollector.h>
+#include <cppunit/TestRunner.h>
+#include <cppunit/BriefTestProgressListener.h>
 
 int main()
 {
-	Tests t;
+	CppUnit::TestResult controller;
+	
+	CppUnit::TestResultCollector result;
+	controller.addListener(&result);
 
-	int a = 10;
+	CppUnit::BriefTestProgressListener progressListener;
+	controller.addListener(&progressListener);
 
-	cout << t.someMethod(a) << endl;
-	assert(t.someMethod(a) == 0);
-	assert(t.someMethod(a) == 1);
-	cin.get();
-	return 0;
+	CppUnit::TextUi::TestRunner runner;
+	runner.addTest(Tests::suite());
+
+	std::cout << "RUNNING LOTTORY TESTS" << std::endl;
+	runner.run(controller);
+
+	CppUnit::CompilerOutputter outputter(&result, std::cerr);
+	outputter.write();
+
+	system("pause");
+	return result.wasSuccessful() ? 0 : 1;
 }
